@@ -1,0 +1,18 @@
+body {
+    background-image: url('meteomadame.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+.navbar {
+    height: 8vh;
+}
+
+.plot-container {
+    display: flex;
+    width: 100vw;
+    height: 92vh;
+    justify-content: center;
+    align-items: center;
+}
