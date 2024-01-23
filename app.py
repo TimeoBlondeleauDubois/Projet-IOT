@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import sqlite3
 from bcrypt import hashpw, gensalt
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -86,18 +87,16 @@ def sonde1():
 
             valeur = request.form['valeur']
             type_mesure = request.form['type_mesure']
+            temps = datetime.now()  # Obtenez la date et l'heure actuelles
 
             if type_mesure == 'temperature':
-                cursor.execute("INSERT INTO Meteo (temperature) VALUES (?)", (valeur,))
-
+                cursor.execute("INSERT INTO Meteo (temperature, temps) VALUES (?, ?)", (valeur, temps))
             elif type_mesure == 'humidite':
-                cursor.execute("INSERT INTO Meteo (humidite) VALUES (?)", (valeur,))
-
+                cursor.execute("INSERT INTO Meteo (humidite, temps) VALUES (?, ?)", (valeur, temps))
             elif type_mesure == 'pression':
-                cursor.execute("INSERT INTO Meteo (pression) VALUES (?)", (valeur,))
+                cursor.execute("INSERT INTO Meteo (pression, temps) VALUES (?, ?)", (valeur, temps))
 
         return redirect(url_for('sonde'))
-    
     
 @app.route('/afficher_mesures')
 def afficher_mesures():

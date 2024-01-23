@@ -15,10 +15,10 @@ cursor.execute("""
     CREATE TABLE IF NOT EXISTS Meteo (
         M_Id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER,
-        temperature VARCHAR TINYINT,
-        humidite VARCHAR TINYINT,
-        pression VARCHAR TINYINT,
-        temps TIME,
+        temperature REAL,
+        humidite REAL,
+        pression REAL,
+        temps DATETIME,
         FOREIGN KEY (user_id) REFERENCES User(US_Id)
     );
 """)
