@@ -4,21 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Afficher et Supprimer les mesures</title>
-    <link rel="stylesheet" href="/static/style4.css">
+    <link rel="stylesheet" href="/static/style5.css">
 </head>
 <body>
     <div class="wrapper">
         <h1>Mesures enregistrées</h1>
-        <ul>
-            {% for mesure in mesures %}
-                <li>
-                    {{ mesure[1] }} ({{ mesure[2] }}) - {{ mesure[3] }}
-                    <form method="post" action="{{ url_for('supprimer_mesure', mesure_id=mesure[0]) }}">
-                        <button type="submit" class="btn">Supprimer</button>
-                    </form>
-                </li>
-            {% endfor %}
-        </ul>
+        <table>
+            <thead>
+                <tr>
+                    <th>Température</th>
+                    <th>Humidité</th>
+                    <th>Pression</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for mesure in mesures %}
+                    <tr>
+                        <td>
+                            {% if mesure[2] is not none %}
+                                {{ mesure[2] }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if mesure[3] is not none %}
+                                {{ mesure[3] }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if mesure[4] is not none %}
+                                {{ mesure[4] }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form method="post" action="{{ url_for('supprimer_mesure', mesure_id=mesure[0]) }}">
+                                <button type="submit" class="btn">Supprimer</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <br>
         <a href="{{ url_for('sonde') }}" class="btn">Retour</a>
     </div>
 </body>
