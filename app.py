@@ -87,7 +87,7 @@ def sonde1():
 
             valeur = request.form['valeur']
             type_mesure = request.form['type_mesure']
-            temps = datetime.now()  # Obtenez la date et l'heure actuelles
+            temps = datetime.now()
 
             if type_mesure == 'temperature':
                 cursor.execute("INSERT INTO Meteo (temperature, temps) VALUES (?, ?)", (valeur, temps))
@@ -123,7 +123,7 @@ def get_data():
         cursor.execute("SELECT temps, temperature FROM Meteo")
         data = cursor.fetchall()
 
-    # Convertir les données en format compréhensible par Plotly
+    # Convertir les données en format compréhensible
     result = {"temps": [entry[0] for entry in data], "temperature": [entry[1] for entry in data]}
     
     return jsonify(result)
