@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import sqlite3
 from bcrypt import hashpw, gensalt
 
@@ -116,6 +116,18 @@ def supprimer_mesure(mesure_id):
 
     return redirect(url_for('afficher_mesures'))
 
+
+@app.route('/get_data')
+def get_data():
+    with connect_db() as db:
+        cursor = db.cursor()
+        cursor.execute("SELECT temps, temperature FROM Meteo")
+        data = cursor.fetchall()
+
+    # Convertir les données en format compréhensible par Plotly
+    result = {"temps": [entry[0] for entry in data], "temperature": [entry[1] for entry in data]}
+    
+    return jsonify(result)
 
 if __name__ == "__main__":
     app.run(debug=True,port=2000#, host='192.168.164.187')
