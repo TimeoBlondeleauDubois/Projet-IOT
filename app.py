@@ -118,4 +118,4 @@ def supprimer_mesure(mesure_id):
 
 
 if __name__ == "__main__":
-    app.run(port=2000)
+    app.run(debug=True,port=2000,host='192.168.164.187')
