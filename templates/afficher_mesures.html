@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Afficher et Supprimer les mesures</title>
+    <link rel="stylesheet" href="/static/style4.css">
+</head>
+<body>
+    <div class="wrapper">
+        <h1>Mesures enregistrées</h1>
+        <ul>
+            {% for mesure in mesures %}
+                <li>
+                    {{ mesure[1] }} ({{ mesure[2] }}) - {{ mesure[3] }}
+                    <form method="post" action="{{ url_for('supprimer_mesure', mesure_id=mesure[0]) }}">
+                        <button type="submit" class="btn">Supprimer</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+        <a href="{{ url_for('sonde') }}" class="btn">Retour</a>
+    </div>
+</body>
+</html>

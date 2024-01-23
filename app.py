@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
 from bcrypt import hashpw, gensalt
-import random
 
 app = Flask(__name__)
 
@@ -78,6 +77,44 @@ def create_user(username, password):
 @app.route('/sonde')
 def sonde():
     return render_template('sonde.html')
+
+@app.route('/sonde1', methods=['POST'])
+def sonde1():
+    if request.method == 'POST':
+        with connect_db() as db:
+            cursor = db.cursor()
+
+            valeur = request.form['valeur']
+            type_mesure = request.form['type_mesure']
+
+            if type_mesure == 'temperature':
+                cursor.execute("INSERT INTO Meteo (temperature) VALUES (?)", (valeur,))
+
+            elif type_mesure == 'humidite':
+                cursor.execute("INSERT INTO Meteo (humidite) VALUES (?)", (valeur,))
+
+            elif type_mesure == 'pression':
+                cursor.execute("INSERT INTO Meteo (pression) VALUES (?)", (valeur,))
+
+        return redirect(url_for('sonde'))
+    
+    
+@app.route('/afficher_mesures')
+def afficher_mesures():
+    with connect_db() as db:
+        cursor = db.cursor()
+        cursor.execute("SELECT * FROM Meteo")
+        mesures = cursor.fetchall()
+    return render_template('afficher_mesures.html', mesures=mesures)
+
+@app.route('/supprimer_mesure/<int:mesure_id>', methods=['POST'])
+def supprimer_mesure(mesure_id):
+    with connect_db() as db:
+        cursor = db.cursor()
+        cursor.execute("DELETE FROM Meteo WHERE M_Id = ?", (mesure_id,))
+        db.commit()
+
+    return redirect(url_for('afficher_mesures'))
 
 
 if __name__ == "__main__":
