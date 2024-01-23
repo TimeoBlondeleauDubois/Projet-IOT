@@ -18,6 +18,7 @@ cursor.execute("""
         temperature VARCHAR TINYINT,
         humidite VARCHAR TINYINT,
         pression VARCHAR TINYINT,
+        temps TIME,
         FOREIGN KEY (user_id) REFERENCES User(US_Id)
 );
 """)
