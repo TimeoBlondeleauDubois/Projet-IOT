@@ -37,7 +37,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            <form method="post" action="{{ url_for('supprimer_mesure', mesure_id=mesure[0]) }}">
+                            <form method="post" action="/supprimer_mesure/{{ mesure[0] }}">
                                 <button type="submit" class="btn">Supprimer</button>
                             </form>
                         </td>
@@ -46,7 +46,7 @@
             </tbody>
         </table>
         <br>
-        <a href="{{ url_for('sonde') }}" class="btn">Retour</a>
+        <a href="/sonde" class="btn">Retour</a>
     </div>
 </body>
 </html>
