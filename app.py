@@ -75,5 +75,10 @@ def create_user(username, password):
         return False
 
 
+@app.route('/sonde')
+def sonde():
+    return render_template('sonde.html')
+
+
 if __name__ == "__main__":
     app.run(port=2000)
