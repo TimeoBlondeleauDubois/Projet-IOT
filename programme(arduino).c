@@ -4,10 +4,10 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <ArduinoJson.h>
+#include <ESP8266WiFi.h>
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
-
 #define SEALEVELPRESSURE_HPA (1013.25)
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
@@ -18,10 +18,12 @@ float humidityValues[5];
 float pressureValues[5];
 int currentIndex = 0;
 
-DynamicJsonDocument jsonDoc(1024);  // Taille du document JSON, ajustez selon vos besoins
+const char* ssid = "Amaury";
+const char* password = "jailadalle123";
+const char* jsonFileName = "/data.json";
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   Wire.pins(0, 2);
   Wire.begin();
@@ -39,8 +41,18 @@ void setup() {
     while (1);
   }
 
-  Serial.println("-- Print BME280 readings--");
-  Serial.println();
+  // Connexion WiFi
+  WiFi.begin(ssid, password);
+  Serial.println("Connecting to WiFi...");
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Connecting to WiFi...");
+  }
+
+  // Affichage de l'adresse IP
+  Serial.print("WiFi connected, IP address: ");
+  Serial.println(WiFi.localIP());
 }
 
 void saveJson(float averageTemperature, float averageHumidity, float averagePressure) {
@@ -50,8 +62,24 @@ void saveJson(float averageTemperature, float averageHumidity, float averagePres
   Serial.print(averageHumidity);
   Serial.print(F(", averagePressure:"));
   Serial.println(averagePressure);
-}
 
+  // Créer un objet JSON
+  DynamicJsonDocument jsonDoc(1024);
+  jsonDoc["averageTemperature"] = averageTemperature;
+  jsonDoc["averageHumidity"] = averageHumidity;
+  jsonDoc["averagePressure"] = averagePressure;
+
+  // Ouvrir le fichier en mode écriture
+  File jsonFile = SPIFFS.open(jsonFileName, "w");
+  if (!jsonFile) {
+    Serial.println(F("Failed to open file for writing"));
+    return;
+  }
+
+  // Sérialiser l'objet JSON dans le fichier
+  serializeJson(jsonDoc, jsonFile);
+  jsonFile.close();
+}
 
 float calculateAverage(float values[]) {
   float sum = 0;
@@ -72,6 +100,10 @@ void loop() {
 
   currentIndex = (currentIndex + 1) % 5;
 
+  // Mesurer chaque seconde
+  delay(1000);
+
+  // Calculer la moyenne toutes les 5 secondes
   if (currentIndex == 0) {
     float averageTemperature = calculateAverage(temperatureValues);
     float averageHumidity = calculateAverage(humidityValues);
@@ -95,17 +127,16 @@ void loop() {
     display.println();
     display.print("Moyenne Temp. = ");
     display.print(averageTemperature);
-    display.println(" C");
+    
     display.print("Moyenne Hum. = ");
     display.print(averageHumidity);
-    display.println(" %");
+    
     display.print("Moyenne Press. = ");
     display.print(averagePressure);
-    display.println(" hPa");
+   
     display.display();
 
+    // Enregistrement des données dans le fichier JSON
     saveJson(averageTemperature, averageHumidity, averagePressure);
   }
-
-  delay(5000);
 }
