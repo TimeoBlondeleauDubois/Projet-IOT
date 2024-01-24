@@ -1,17 +1,20 @@
 body {
-    background: linear-gradient(to bottom, #FFE7C1 0%, #DC84F3 100%);
+    /* background: linear-gradient(to bottom, #FFE7C1 0%, #DC84F3 100%); */
+    /* background-image: url(''); */
     background-repeat: no-repeat;
     background-size: cover;
     background-attachment: fixed;
+    background-position: center;
 }
 
 
 
+
 .graphContainer {
-    /* display: flex; */
     padding: 10px;
     text-align: center;
-    /* background: beige; */
+    margin-top: 30px;
+    height: 80vh;
 }
 
 .graph {
@@ -21,13 +24,12 @@ body {
 
 .flex-container {
     display: flex;
-    flex-wrap: wrap;
-    /* height: 50px; */
+    flex-wrap: wrap;    
     text-align: center;
     flex-direction: row;
   }
   .flex-item {
-    /* width: ; */
+    width: 100%;
     height: 100%;
   }
 
@@ -45,7 +47,46 @@ body {
     margin: 0;
     border-radius: 10px !important;
 }
-.main-svg:hover {
-    padding: 0;
-    margin: 0;
+
+.btn-container {
+    /* background: aqua; */
+    display: flex;
+    align-items: center !important;
+    justify-content: space-around;
 }
+
+.sondebtn{
+    background-color:  #bd6ed0 !important;
+    box-shadow: 1px 1px 4px 1px #0000009d;
+    border: none !important;
+    width: 80vw;
+    height: 80px;
+    margin: 10px 0;
+    font-size: 200% !important;
+}
+.sondebtn:hover{
+    background-color:  #a260b3 !important;
+}
+
+.colormode-container {
+    /* background: red; */
+    border-radius: 100%;
+    padding: 8px;
+}
+
+.moon {
+    height: 40px;
+    width: 40px;
+    display: none;
+    
+}
+
+.sun {
+    height: 40px;
+    width: 40px;
+    /* display: none; */
+    
+}
+
+
+

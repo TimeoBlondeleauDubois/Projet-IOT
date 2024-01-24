@@ -60,3 +60,27 @@
               Plotly.newPlot("myPlotPress", plotDataPress, plotLayoutPress);
           })
           .catch(error => console.error('Erreur lors de la récupération des données:', error));
+
+
+// script pour changer le theme
+function toggleIcons() {
+    var moonIcon = document.getElementById("moon-icon");
+    var sunIcon = document.getElementById("sun-icon");
+    var bodyElement = document.body;
+    var iconClicked = ""
+
+    if (moonIcon.style.display === "block") {
+      moonIcon.style.display = "none";
+      sunIcon.style.display = "block";
+      bodyElement.style.backgroundImage = "url('static/nightbg.png')";
+      iconClicked = "moon";
+      
+    } else {
+        moonIcon.style.display = "block";
+        sunIcon.style.display = "none";
+        bodyElement.style.backgroundImage = "url('static/lightbg.png')";
+        iconClicked = "sun";
+    }
+    // console.log(iconClicked);
+    return iconClicked;
+  }

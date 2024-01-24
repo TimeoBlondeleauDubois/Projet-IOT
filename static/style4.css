@@ -3,6 +3,11 @@ body {
     background-color: #f4f4f4;
     margin: 0;
     padding: 0;
+    background: linear-gradient(to bottom, #FFE7C1 0%, #DC84F3 100%);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
 }
 
 .wrapper {
