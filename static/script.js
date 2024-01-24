@@ -9,7 +9,7 @@
               const yPressure = data.pressure;
   
               // Création du graphique Plotly
-              const plotData = [
+              const plotDataTemp = [
                   {
                       x: xValues,
                       y: yTemperature,
@@ -17,31 +17,46 @@
                       mode: "lines",
                       name: "Température",
                       marker: { color: 'red' }
-                  },
-                  {
-                      x: xValues,
-                      y: yHumidity,
-                      type: "scatter",
-                      mode: "lines",
-                      name: "Humidité",
-                      marker: { color: 'blue' }
-                  },
-                  {
-                      x: xValues,
-                      y: yPressure,
-                      type: "scatter",
-                      mode: "lines",
-                      name: "Pression",
-                      marker: { color: 'green' }
                   }
-              ];
-  
-              const plotLayout = {
-                  title: "Graphique Température, Humidité, Pression en fonction du temps",
+                ];
+                const plotDataHum = [
+                      {
+                          x: xValues,
+                          y: yHumidity,
+                          type: "scatter",
+                          mode: "lines",
+                          name: "Humidité",
+                          marker: { color: 'blue' }
+                      }
+                ];
+                const plotDataPress = [
+                       {
+                            x: xValues,
+                            y: yPressure,
+                            type: "scatter",
+                            mode: "lines",
+                            name: "Pression",
+                            marker: { color: 'green' }
+                        }
+                ];
+                  
+             const plotLayoutTemp = {
+                  title: "Graphique Température en fonction du temps",
                   xaxis: { title: "Temps" },
-                  yaxis: { title: "Mesures" }
+                  yaxis: { title: "°C" }
               };
-  
-              Plotly.newPlot("myPlot", plotData, plotLayout);
+              const plotLayoutHum = {
+                  title: "Graphique Humidité en fonction du temps",
+                  xaxis: { title: "Temps" },
+                  yaxis: { title: "%" }
+              };
+              const plotLayoutPress = {
+                  title: "Graphique Pression en fonction du temps",
+                  xaxis: { title: "Temps" },
+                  yaxis: { title: "hPa" }
+              };
+              Plotly.newPlot("myPlotTemp", plotDataTemp, plotLayoutTemp);
+              Plotly.newPlot("myPlotHum", plotDataHum, plotLayoutHum);
+              Plotly.newPlot("myPlotPress", plotDataPress, plotLayoutPress);
           })
           .catch(error => console.error('Erreur lors de la récupération des données:', error));
