@@ -1,6 +1,6 @@
 import serial
 
-ser = serial.Serial('COMx', 9600)  # Remplacez 'COMx' par le port série approprié sur votre PC
+ser = serial.Serial('COM8', 9600)  # Remplacez 'COMx' par le port série approprié sur votre PC
 
 # Attendre le début de la transmission
 while ser.readline().decode('utf-8').strip() != '{"averageTemperature":':
