@@ -1,50 +1,40 @@
-/* Include libraries of BME280 sensor */
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
-
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include <ArduinoJson.h>
+#include <FS.h>
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
-
-/*#include <SPI.h>  // uncomment his if you are using SPI interface
-#define BME_SCK 18
-#define BME_MISO 19
-#define BME_MOSI 23
-#define BME_CS 5*/
 
 #define SEALEVELPRESSURE_HPA (1013.25)
 
-#define SCREEN_WIDTH 128 // OLED display width, in pixels
-#define SCREEN_HEIGHT 64 // OLED display height, in pixels
-
-// Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
-
 Adafruit_BME280 bme; // I2C
-//Adafruit_BME280 bme(BME_CS); // hardware SPI
-//Adafruit_BME280 bme(BME_CS, BME_MOSI, BME_MISO, BME_SCK); // software SPI
 
+float temperatureValues[5];
+float humidityValues[5];
+float pressureValues[5];
+int currentIndex = 0;
+
+DynamicJsonDocument jsonDoc(1024);  // Taille du document JSON, ajustez selon vos besoins
 
 void setup() {
   Serial.begin(9600);
 
-  Wire.pins(0,2);
+  Wire.pins(0, 2);
   Wire.begin();
 
-  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3D for 128x64
+  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println(F("SSD1306 allocation failed"));
-    for(;;);
+    for (;;);
   }
   delay(2000);
 
   bool status;
-
-  // default settings
-  // (you can also pass in a Wire library object like &Wire2)
-  status = bme.begin(0x76);  
+  status = bme.begin(0x76);
   if (!status) {
     Serial.println("Could not detect a BME280 sensor, Fix wiring Connections!");
     while (1);
@@ -54,49 +44,73 @@ void setup() {
   Serial.println();
 }
 
+void saveJson(float averageTemperature, float averageHumidity, float averagePressure) {
+  jsonDoc["averageTemperature"] = averageTemperature;
+  jsonDoc["averageHumidity"] = averageHumidity;
+  jsonDoc["averagePressure"] = averagePressure;
 
-void loop() { 
+  // Envoi des données JSON sur la connexion série
+  serializeJson(jsonDoc, Serial);
+  Serial.println();  // Ajoutez un saut de ligne pour séparer les envois
 
-  Serial.print("Temperature = ");
-  Serial.print(bme.readTemperature());
-  Serial.println(" *C");
-  
-  // Convert temperature to Fahrenheit
-  /*Serial.print("Temperature = ");
-  Serial.print(1.8 * bme.readTemperature() + 32);
-  Serial.println(" *F");*/
-  
-  Serial.print("Pression = ");
-  Serial.print(bme.readPressure() / 100.0F);
-  Serial.println(" hPa");
+  // Attendez une courte période pour permettre au PC de recevoir les données
+  delay(100);
+}
 
-  Serial.print("Humidite = ");
-  Serial.print(bme.readHumidity());
-  Serial.println(" %");
 
-  Serial.println();
+float calculateAverage(float values[]) {
+  float sum = 0;
+  for (int i = 0; i < 5; i++) {
+    sum += values[i];
+  }
+  return sum / 5;
+}
 
-  display.clearDisplay();
-  display.setCursor(0, 10);
-  display.setTextSize(1);
-  display.setTextColor(WHITE);
+void loop() {
+  float temperature = bme.readTemperature();
+  float humidity = bme.readHumidity();
+  float pressure = bme.readPressure() / 100.0F;
 
-  display.println("METEO");
-  display.println();
+  temperatureValues[currentIndex] = temperature;
+  humidityValues[currentIndex] = humidity;
+  pressureValues[currentIndex] = pressure;
 
-  display.print("Temp. = ");
-  display.print(bme.readTemperature());
-  display.println(" C");
+  currentIndex = (currentIndex + 1) % 5;
 
-  display.print("Press. = ");
-  display.print(bme.readPressure() / 100.0F);
-  display.println(" hPa");
+  if (currentIndex == 0) {
+    float averageTemperature = calculateAverage(temperatureValues);
+    float averageHumidity = calculateAverage(humidityValues);
+    float averagePressure = calculateAverage(pressureValues);
 
-  display.print("Hum. = ");
-  display.print(bme.readHumidity());
-  display.println(" %");
+    Serial.print("Moyenne Température = ");
+    Serial.print(averageTemperature);
+    Serial.println(" *C");
+    Serial.print("Moyenne Humidité = ");
+    Serial.print(averageHumidity);
+    Serial.println(" %");
+    Serial.print("Moyenne Pression = ");
+    Serial.print(averagePressure);
+    Serial.println(" hPa");
 
-  display.display();
+    display.clearDisplay();
+    display.setCursor(0, 10);
+    display.setTextSize(1);
+    display.setTextColor(WHITE);
+    display.println("METEO");
+    display.println();
+    display.print("Moyenne Temp. = ");
+    display.print(averageTemperature);
+    display.println(" C");
+    display.print("Moyenne Hum. = ");
+    display.print(averageHumidity);
+    display.println(" %");
+    display.print("Moyenne Press. = ");
+    display.print(averagePressure);
+    display.println(" hPa");
+    display.display();
+
+    saveJson(averageTemperature, averageHumidity, averagePressure);
+  }
 
   delay(5000);
 }
