@@ -15,6 +15,7 @@
                     <th>Température</th>
                     <th>Humidité</th>
                     <th>Pression</th>
+                    <th>Date et Heure</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -37,7 +38,10 @@
                             {% endif %}
                         </td>
                         <td>
-                            <form method="post" action="{{ url_for('supprimer_mesure', mesure_id=mesure[0]) }}">
+                            {{ mesure[5] }}
+                        </td>
+                        <td>
+                            <form method="post" action="/supprimer_mesure/{{ mesure[0] }}">
                                 <button type="submit" class="btn">Supprimer</button>
                             </form>
                         </td>
@@ -46,7 +50,7 @@
             </tbody>
         </table>
         <br>
-        <a href="{{ url_for('sonde') }}" class="btn">Retour</a>
+        <a href="/sonde" class="btn">Retour</a>
     </div>
 </body>
 </html>

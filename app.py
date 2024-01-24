@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import sqlite3
 from bcrypt import hashpw, gensalt
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -86,18 +87,16 @@ def sonde1():
 
             valeur = request.form['valeur']
             type_mesure = request.form['type_mesure']
+            temps = datetime.now()
 
             if type_mesure == 'temperature':
-                cursor.execute("INSERT INTO Meteo (temperature) VALUES (?)", (valeur,))
-
+                cursor.execute("INSERT INTO Meteo (temperature, temps) VALUES (?, ?)", (valeur, temps))
             elif type_mesure == 'humidite':
-                cursor.execute("INSERT INTO Meteo (humidite) VALUES (?)", (valeur,))
-
+                cursor.execute("INSERT INTO Meteo (humidite, temps) VALUES (?, ?)", (valeur, temps))
             elif type_mesure == 'pression':
-                cursor.execute("INSERT INTO Meteo (pression) VALUES (?)", (valeur,))
+                cursor.execute("INSERT INTO Meteo (pression, temps) VALUES (?, ?)", (valeur, temps))
 
         return redirect(url_for('sonde'))
-    
     
 @app.route('/afficher_mesures')
 def afficher_mesures():
@@ -117,5 +116,19 @@ def supprimer_mesure(mesure_id):
     return redirect(url_for('afficher_mesures'))
 
 
+@app.route('/get_data')
+def get_data():
+    with connect_db() as db:
+        cursor = db.cursor()
+        cursor.execute("SELECT temps, temperature FROM Meteo")
+        data = cursor.fetchall()
+
+    # Convertir les données en format compréhensible
+    result = {"temps": [entry[0] for entry in data], "temperature": [entry[1] for entry in data]}
+    
+    return jsonify(result)
+
 if __name__ == "__main__":
-    app.run(port=2000)
+    app.run(debug=True,port=2000#, host='192.168.164.187')
+    )
+
