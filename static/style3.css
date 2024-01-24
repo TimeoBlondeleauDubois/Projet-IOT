@@ -1,18 +1,51 @@
 body {
-    background-image: url('meteomadame.jpg');
+    background: linear-gradient(to bottom, #FFE7C1 0%, #DC84F3 100%);
     background-repeat: no-repeat;
-    background-attachment: fixed;
     background-size: cover;
+    background-attachment: fixed;
 }
 
-.navbar {
-    height: 8vh;
+
+
+.graphContainer {
+    /* display: flex; */
+    padding: 10px;
+    text-align: center;
+    /* background: beige; */
 }
 
-.plot-container {
+.graph {
+    width: 50vw;    
+    margin: 5px;
+}
+
+.flex-container {
     display: flex;
-    width: 100vw;
-    height: 92vh;
-    justify-content: center;
-    align-items: center;
+    flex-wrap: wrap;
+    /* height: 50px; */
+    text-align: center;
+    flex-direction: row;
+  }
+  .flex-item {
+    /* width: ; */
+    height: 100%;
+  }
+
+.svg-container {
+    opacity: 0.7;
+    transition: all ease-in 0.1s;
+}
+
+.svg-container:hover {
+    transition: all ease-in 0.1s;
+    opacity: 1;
+}
+.main-svg {
+    padding: 0;
+    margin: 0;
+    border-radius: 10px !important;
+}
+.main-svg:hover {
+    padding: 0;
+    margin: 0;
 }
