@@ -120,11 +120,16 @@ def supprimer_mesure(mesure_id):
 def get_data():
     with connect_db() as db:
         cursor = db.cursor()
-        cursor.execute("SELECT temps, temperature FROM Meteo")
+        cursor.execute("SELECT temps, temperature, humidite, pression FROM Meteo")
         data = cursor.fetchall()
 
-    # Convertir les données en format compréhensible
-    result = {"temps": [entry[0] for entry in data], "temperature": [entry[1] for entry in data]}
+    # Convertir les résultats en format compréhensible (dictionnaire JSON)
+    result = {
+        "temps": [entry[0] for entry in data],
+        "temperature": [entry[1] for entry in data],
+        "humidity": [entry[2] for entry in data],
+        "pressure": [entry[3] for entry in data]
+    }
     
     return jsonify(result)
 
