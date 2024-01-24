@@ -22,24 +22,10 @@
             <tbody>
                 {% for mesure in mesures %}
                     <tr>
-                        <td>
-                            {% if mesure[2] is not none %}
-                                {{ mesure[2] }}
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if mesure[3] is not none %}
-                                {{ mesure[3] }}
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if mesure[4] is not none %}
-                                {{ mesure[4] }}
-                            {% endif %}
-                        </td>
-                        <td>
-                            {{ mesure[5] }}
-                        </td>
+                        <td>{{ mesure[2] }}</td>
+                        <td>{{ mesure[3] }}</td>
+                        <td>{{ mesure[4] }}</td>
+                        <td>{{ mesure[5] }}</td>
                         <td>
                             <form method="post" action="/supprimer_mesure/{{ mesure[0] }}">
                                 <button type="submit" class="btn">Supprimer</button>
