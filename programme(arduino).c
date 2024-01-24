@@ -4,7 +4,6 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <ArduinoJson.h>
-#include <FS.h>
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
@@ -45,16 +44,12 @@ void setup() {
 }
 
 void saveJson(float averageTemperature, float averageHumidity, float averagePressure) {
-  jsonDoc["averageTemperature"] = averageTemperature;
-  jsonDoc["averageHumidity"] = averageHumidity;
-  jsonDoc["averagePressure"] = averagePressure;
-
-  // Envoi des données JSON sur la connexion série
-  serializeJson(jsonDoc, Serial);
-  Serial.println();  // Ajoutez un saut de ligne pour séparer les envois
-
-  // Attendez une courte période pour permettre au PC de recevoir les données
-  delay(100);
+  Serial.print(F("averageTemperature:"));
+  Serial.print(averageTemperature);
+  Serial.print(F(", averageHumidity:"));
+  Serial.print(averageHumidity);
+  Serial.print(F(", averagePressure:"));
+  Serial.println(averagePressure);
 }
 
 

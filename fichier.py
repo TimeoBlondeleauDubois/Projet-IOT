@@ -1,17 +1,16 @@
 import serial
+import json
 
-ser = serial.Serial('COM8', 9600)  # Remplacez 'COMx' par le port série approprié sur votre PC
+ser = serial.Serial('COM8', 9600)
 
-# Attendre le début de la transmission
-while ser.readline().decode('utf-8').strip() != '{"averageTemperature":':
-    pass
+while True:
+    line = ser.readline().decode('utf-8').strip()
+    if line:
+        data = {}
+        pairs = line.split(', ')
+        for pair in pairs:
+            key, value = pair.split(':')
+            data[key.strip()] = float(value)
 
-# Ouvrir un fichier pour sauvegarder les données JSON
-with open('data_from_arduino.json', 'w') as file:
-    while True:
-        line = ser.readline().decode('utf-8').strip()
-        if line == '}':
-            break
-        file.write(line + '\n')
-
-ser.close()
+        with open('data.json', 'w') as file:
+            json.dump(data, file, indent=2)
