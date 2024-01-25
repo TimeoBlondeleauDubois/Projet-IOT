@@ -3,12 +3,13 @@
 #include <Adafruit_BME280.h>
 #include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
+#include <ESP8266HTTPClient.h>
 
 Adafruit_BME280 bme; // I2C
 
-const char* ssid = "amaur";
-const char* password = "1234";
-const char* serverUrl = "127.0.1.1"; // Remplacez par l'adresse IP de votre Raspberry Pi
+const char* ssid = "Alexandre's Galaxy S21 5G";
+const char* password = "MMMMMMMM";
+const char* serverUrl = "http://127.0.0.1:2000/fichier.json"; // Replace with your PC address and desired path
 
 void setup() {
   Serial.begin(115200);
@@ -20,7 +21,7 @@ void setup() {
     while (1);
   }
 
-  // Connexion WiFi
+  // WiFi Connection
   WiFi.begin(ssid, password);
   Serial.println("Connecting to WiFi...");
 
@@ -33,54 +34,44 @@ void setup() {
   Serial.println(WiFi.localIP());
 }
 
-void loop() {
-  // Lire les données du capteur BME280
-  float temperature = bme.readTemperature();
-  float humidity = bme.readHumidity();
-  float pressure = bme.readPressure() / 100.0F;
+void sendJSONToServer(float temperature, float humidity, float pressure) {
+  HTTPClient http;
 
-  // Créer un objet JSON
+  http.begin(serverUrl);
+  http.addHeader("Content-Type", "application/json");
+
+  // Create JSON object
   DynamicJsonDocument jsonDoc(1024);
   jsonDoc["temperature"] = temperature;
   jsonDoc["humidity"] = humidity;
   jsonDoc["pressure"] = pressure;
 
-  // Convertir l'objet JSON en chaîne
+  // Convert JSON to string
   String jsonString;
   serializeJson(jsonDoc, jsonString);
 
-  // Créer une instance de l'objet WiFiClient
-  WiFiClient client;
+  int httpResponseCode = http.POST(jsonString);
 
-  // Connexion au serveur
-  if (client.connect(serverUrl, 5000)) {
-    // Construire l'URL pour la requête POST
-    String url = "/upload";
-    
-    // Créer le corps de la requête avec le JSON en tant que données
-    String postData = "application/json" + String(jsonString.length()) + "\r\n\r\n" + jsonString;
-
-    // Envoyer la requête POST
-    client.print("POST " + url + " HTTP/1.1\r\n");
-    client.print("Host: " + String(serverUrl) + "\r\n");
-    client.print("Content-Type: application/json\r\n");
-    client.print("Content-Length: " + String(jsonString.length()) + "\r\n");
-    client.print("\r\n");
-    client.print(jsonString);
-
-    // Attendre la réponse du serveur
-    delay(1000);
-
-    // Lire et afficher la réponse du serveur
-    while (client.available()) {
-      String line = client.readStringUntil('\r');
-      Serial.print(line);
-    }
-
-    // Fermer la connexion
-    client.stop();
+  if (httpResponseCode > 0) {
+    Serial.print("Data sent successfully, Response code: ");
+    Serial.println(httpResponseCode);
+  } else {
+    Serial.print("Error sending data, Response code: ");
+    Serial.println(httpResponseCode);
   }
 
-  // Attente avant la prochaine lecture
+  http.end();
+}
+
+void loop() {
+  // Read sensor data
+  float temperature = bme.readTemperature();
+  float humidity = bme.readHumidity();
+  float pressure = bme.readPressure() / 100.0F;
+
+  // Send data to the server
+  sendJSONToServer(temperature, humidity, pressure);
+
+  // Wait before the next reading
   delay(5000);
 }
