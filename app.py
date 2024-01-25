@@ -105,7 +105,11 @@ def afficher_mesures():
         cursor = db.cursor()
         cursor.execute("SELECT * FROM Meteo")
         mesures = cursor.fetchall()
-    return render_template('afficher_mesures.html', mesures=mesures)
+    
+    mesures_enum = list(enumerate(mesures, start=1))
+
+    return render_template('afficher_mesures.html', mesures_enum=mesures_enum)
+
 
 @app.route('/supprimer_mesure/<int:mesure_id>', methods=['POST'])
 def supprimer_mesure(mesure_id):
