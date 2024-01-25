@@ -133,6 +133,10 @@ def get_data():
     
     return jsonify(result)
 
+@app.route('/php')
+def php():
+    return render_template('enregistrement_meteo.php')
+
 if __name__ == "__main__":
     app.run(debug=True,port=2000#, host='192.168.164.187')
     )
