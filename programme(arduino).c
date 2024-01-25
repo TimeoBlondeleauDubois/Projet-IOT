@@ -5,10 +5,14 @@
 #include <Adafruit_SSD1306.h>
 #include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
+#include <ESP8266HTTPClient.h>
+#include <WiFiClient.h>
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 #define SEALEVELPRESSURE_HPA (1013.25)
+
+
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 Adafruit_BME280 bme; // I2C
@@ -21,6 +25,7 @@ int currentIndex = 0;
 const char* ssid = "Amaury";
 const char* password = "jailadalle123";
 const char* jsonFileName = "/data.json";
+const char* serverUrl = "http://127.0.0.1:2000/enregistrement_meteo.php"; // Remplacez par l'URL de votre serveur
 
 void setup() {
   Serial.begin(115200);
@@ -138,5 +143,63 @@ void loop() {
 
     // Enregistrement des données dans le fichier JSON
     saveJson(averageTemperature, averageHumidity, averagePressure);
+  }
+}
+
+
+void saveToDatabase(float temperature, float humidity, float pressure) {
+  HTTPClient http;
+
+  // Construire l'URL avec les paramètres
+  String url = String(serverUrl) + "?temperature=" + temperature + "&humidity=" + humidity + "&pressure=" + pressure;
+
+  // Commencer la connexion HTTP
+  http.begin(url);
+
+  // Envoyer la requête HTTP GET et récupérer la réponse
+  int httpCode = http.GET();
+  if (httpCode > 0) {
+    Serial.printf("[HTTP] GET... code: %d\n", httpCode);
+  } else {
+    Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
+  }
+
+  // Libérer les ressources
+  http.end();
+}
+
+void loop() {
+  float temperature = bme.readTemperature();
+  float humidity = bme.readHumidity();
+  float pressure = bme.readPressure() / 100.0F;
+
+  temperatureValues[currentIndex] = temperature;
+  humidityValues[currentIndex] = humidity;
+  pressureValues[currentIndex] = pressure;
+
+  currentIndex = (currentIndex + 1) % 5;
+
+  // Mesurer chaque seconde
+  delay(1000);
+
+  // Calculer la moyenne toutes les 5 secondes
+  if (currentIndex == 0) {
+    float averageTemperature = calculateAverage(temperatureValues);
+    float averageHumidity = calculateAverage(humidityValues);
+    float averagePressure = calculateAverage(pressureValues);
+
+    // Afficher les moyennes sur le moniteur série
+    Serial.print("Moyenne Température = ");
+    Serial.print(averageTemperature);
+    Serial.println(" *C");
+    Serial.print("Moyenne Humidité = ");
+    Serial.print(averageHumidity);
+    Serial.println(" %");
+    Serial.print("Moyenne Pression = ");
+    Serial.print(averagePressure);
+    Serial.println(" hPa");
+
+    // Envoyer les données à la base de données SQLite
+    saveToDatabase(averageTemperature, averageHumidity, averagePressure);
   }
 }
