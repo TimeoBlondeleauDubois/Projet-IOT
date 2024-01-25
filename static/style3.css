@@ -1,9 +1,9 @@
 body {
     /* background: linear-gradient(to bottom, #FFE7C1 0%, #DC84F3 100%); */
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-attachment: fixed;
-    background-position: center;
+    background-repeat: no-repeat !important;
+    background-size: cover !important;
+    background-attachment: fixed !important;
+    background-position: center !important;
     background: url(nightbg.png);
 }
 
@@ -77,9 +77,6 @@ body {
     box-shadow: 0px 0px 4px 1px #0000009d;
 }
 
-.colormode-container:hover .moon {
-    fill:red;
-}
 
 .moon {
     height: 40px;
@@ -87,7 +84,6 @@ body {
     display: none;
     
 }
-
 
 .sun {
     height: 40px;
