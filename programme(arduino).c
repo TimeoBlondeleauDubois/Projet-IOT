@@ -7,9 +7,9 @@
 
 Adafruit_BME280 bme; // I2C
 
-const char* ssid = "amaur";
-const char* password = "1234";
-const char* serverUrl = "127.0.1.1"; // Remplacez par l'adresse IP de votre Raspberry Pi
+const char* ssid = "legra";
+const char* password = "123";
+const char* serverUrl = "192.168.170.187"; // Remplacez par l'adresse IP de votre Raspberry Pi
 
 void setup() {
   Serial.begin(115200);
@@ -45,6 +45,7 @@ void loop() {
   jsonDoc["temperature"] = temperature;
   jsonDoc["humidity"] = humidity;
   jsonDoc["pressure"] = pressure;
+  jsonDoc["message"] = "hello world"; // Ajoutez cette ligne
 
   // Convertir l'objet JSON en chaîne
   String jsonString;
