@@ -134,19 +134,6 @@ def get_data():
     
     return jsonify(result)
 
-
-@app.route('/fichier.json', methods=['POST'])
-def receive_data():
-    if request.method == 'POST':
-        data = request.get_json()  # Cette ligne récupère les données JSON
-
-        # Faites quelque chose avec les données, par exemple imprimez-les
-        print("Received data:", data)
-
-        # Vous pouvez également enregistrer les données dans la base de données ou effectuer d'autres actions nécessaires
-
-        return jsonify({"message": "Data received successfully"}), 200
-
 if __name__ == "__main__":
     app.run(debug=True,port=2000#, host='192.168.164.187')
     )
