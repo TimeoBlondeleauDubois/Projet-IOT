@@ -24,11 +24,8 @@ cursor.execute("""
 """)
 
 #exemples
-cursor.execute("INSERT INTO Meteo (temperature, temps) VALUES (25.5, '2024-01-23 08:00:00')")
-cursor.execute("INSERT INTO Meteo (temperature, temps) VALUES (26.0, '2024-01-23 09:00:00')")
-cursor.execute("INSERT INTO Meteo (temperature, temps) VALUES (26.5, '2024-01-23 10:00:00')")
-cursor.execute("INSERT INTO Meteo (temperature, temps) VALUES (27.0, '2024-01-23 11:00:00')")
-cursor.execute("INSERT INTO Meteo (temperature, temps) VALUES (26.8, '2024-01-23 12:00:00')")
+cursor.execute("INSERT INTO Meteo (temperature, humidite, pression, temps) VALUES (25.5, 12, 23, '2024-01-23 08:00:00')")
+
 
 connection.commit()
 connection.close()
