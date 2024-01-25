@@ -15,7 +15,7 @@ Adafruit_BME280 bme; // I2C
 
 const char *ssid = "legra";
 const char *password = "123";
-const char *serverIP = "votre_IP_DU_SERVEUR";
+const char *serverIP = "192.168.170.187";
 const int serverPort = 5000;
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
