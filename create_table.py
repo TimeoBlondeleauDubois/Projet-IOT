@@ -25,7 +25,7 @@ cursor.execute("""
 
 #exemples
 cursor.execute("INSERT INTO Meteo (temperature, humidite, pression, temps) VALUES (25.5, 12, 23, '2024-01-23 08:00:00')")
-
+cursor.execute("INSERT INTO Meteo (temperature, humidite, pression, temps) VALUES (24, 13, 21, '2022-01-23 08:00:00')")
 
 connection.commit()
 connection.close()
