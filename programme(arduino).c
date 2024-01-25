@@ -1,43 +1,17 @@
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
 #include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
-#include <WiFiClient.h>
 
-#define SCREEN_WIDTH 128 // OLED display width, in pixels
-#define SCREEN_HEIGHT 64 // OLED display height, in pixels
-#define SEALEVELPRESSURE_HPA (1013.25)
-
-
-
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 Adafruit_BME280 bme; // I2C
 
-float temperatureValues[5];
-float humidityValues[5];
-float pressureValues[5];
-int currentIndex = 0;
-
-const char* ssid = "Amaury";
-const char* password = "jailadalle123";
-const char* jsonFileName = "/data.json";
-const char* serverUrl = "http://127.0.0.1:2000/enregistrement_meteo.php"; // Remplacez par l'URL de votre serveur
+const char* ssid = "amaur";
+const char* password = "1234";
+const char* serverUrl = "127.0.1.1"; // Remplacez par l'adresse IP de votre Raspberry Pi
 
 void setup() {
   Serial.begin(115200);
-
-  Wire.pins(0, 2);
-  Wire.begin();
-
-  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
-    Serial.println(F("SSD1306 allocation failed"));
-    for (;;);
-  }
-  delay(2000);
 
   bool status;
   status = bme.begin(0x76);
@@ -55,151 +29,58 @@ void setup() {
     Serial.println("Connecting to WiFi...");
   }
 
-  // Affichage de l'adresse IP
   Serial.print("WiFi connected, IP address: ");
   Serial.println(WiFi.localIP());
 }
 
-void saveJson(float averageTemperature, float averageHumidity, float averagePressure) {
-  Serial.print(F("averageTemperature:"));
-  Serial.print(averageTemperature);
-  Serial.print(F(", averageHumidity:"));
-  Serial.print(averageHumidity);
-  Serial.print(F(", averagePressure:"));
-  Serial.println(averagePressure);
+void loop() {
+  // Lire les données du capteur BME280
+  float temperature = bme.readTemperature();
+  float humidity = bme.readHumidity();
+  float pressure = bme.readPressure() / 100.0F;
 
   // Créer un objet JSON
   DynamicJsonDocument jsonDoc(1024);
-  jsonDoc["averageTemperature"] = averageTemperature;
-  jsonDoc["averageHumidity"] = averageHumidity;
-  jsonDoc["averagePressure"] = averagePressure;
+  jsonDoc["temperature"] = temperature;
+  jsonDoc["humidity"] = humidity;
+  jsonDoc["pressure"] = pressure;
 
-  // Ouvrir le fichier en mode écriture
-  File jsonFile = SPIFFS.open(jsonFileName, "w");
-  if (!jsonFile) {
-    Serial.println(F("Failed to open file for writing"));
-    return;
-  }
+  // Convertir l'objet JSON en chaîne
+  String jsonString;
+  serializeJson(jsonDoc, jsonString);
 
-  // Sérialiser l'objet JSON dans le fichier
-  serializeJson(jsonDoc, jsonFile);
-  jsonFile.close();
-}
+  // Créer une instance de l'objet WiFiClient
+  WiFiClient client;
 
-float calculateAverage(float values[]) {
-  float sum = 0;
-  for (int i = 0; i < 5; i++) {
-    sum += values[i];
-  }
-  return sum / 5;
-}
-
-void loop() {
-  float temperature = bme.readTemperature();
-  float humidity = bme.readHumidity();
-  float pressure = bme.readPressure() / 100.0F;
-
-  temperatureValues[currentIndex] = temperature;
-  humidityValues[currentIndex] = humidity;
-  pressureValues[currentIndex] = pressure;
-
-  currentIndex = (currentIndex + 1) % 5;
-
-  // Mesurer chaque seconde
-  delay(1000);
-
-  // Calculer la moyenne toutes les 5 secondes
-  if (currentIndex == 0) {
-    float averageTemperature = calculateAverage(temperatureValues);
-    float averageHumidity = calculateAverage(humidityValues);
-    float averagePressure = calculateAverage(pressureValues);
-
-    Serial.print("Moyenne Température = ");
-    Serial.print(averageTemperature);
-    Serial.println(" *C");
-    Serial.print("Moyenne Humidité = ");
-    Serial.print(averageHumidity);
-    Serial.println(" %");
-    Serial.print("Moyenne Pression = ");
-    Serial.print(averagePressure);
-    Serial.println(" hPa");
-
-    display.clearDisplay();
-    display.setCursor(0, 10);
-    display.setTextSize(1);
-    display.setTextColor(WHITE);
-    display.println("METEO");
-    display.println();
-    display.print("Moyenne Temp. = ");
-    display.print(averageTemperature);
+  // Connexion au serveur
+  if (client.connect(serverUrl, 5000)) {
+    // Construire l'URL pour la requête POST
+    String url = "/upload";
     
-    display.print("Moyenne Hum. = ");
-    display.print(averageHumidity);
-    
-    display.print("Moyenne Press. = ");
-    display.print(averagePressure);
-   
-    display.display();
+    // Créer le corps de la requête avec le JSON en tant que données
+    String postData = "application/json" + String(jsonString.length()) + "\r\n\r\n" + jsonString;
 
-    // Enregistrement des données dans le fichier JSON
-    saveJson(averageTemperature, averageHumidity, averagePressure);
-  }
-}
+    // Envoyer la requête POST
+    client.print("POST " + url + " HTTP/1.1\r\n");
+    client.print("Host: " + String(serverUrl) + "\r\n");
+    client.print("Content-Type: application/json\r\n");
+    client.print("Content-Length: " + String(jsonString.length()) + "\r\n");
+    client.print("\r\n");
+    client.print(jsonString);
 
+    // Attendre la réponse du serveur
+    delay(1000);
 
-void saveToDatabase(float temperature, float humidity, float pressure) {
-  HTTPClient http;
+    // Lire et afficher la réponse du serveur
+    while (client.available()) {
+      String line = client.readStringUntil('\r');
+      Serial.print(line);
+    }
 
-  // Construire l'URL avec les paramètres
-  String url = String(serverUrl) + "?temperature=" + temperature + "&humidity=" + humidity + "&pressure=" + pressure;
-
-  // Commencer la connexion HTTP
-  http.begin(url);
-
-  // Envoyer la requête HTTP GET et récupérer la réponse
-  int httpCode = http.GET();
-  if (httpCode > 0) {
-    Serial.printf("[HTTP] GET... code: %d\n", httpCode);
-  } else {
-    Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
+    // Fermer la connexion
+    client.stop();
   }
 
-  // Libérer les ressources
-  http.end();
-}
-
-void loop() {
-  float temperature = bme.readTemperature();
-  float humidity = bme.readHumidity();
-  float pressure = bme.readPressure() / 100.0F;
-
-  temperatureValues[currentIndex] = temperature;
-  humidityValues[currentIndex] = humidity;
-  pressureValues[currentIndex] = pressure;
-
-  currentIndex = (currentIndex + 1) % 5;
-
-  // Mesurer chaque seconde
-  delay(1000);
-
-  // Calculer la moyenne toutes les 5 secondes
-  if (currentIndex == 0) {
-    float averageTemperature = calculateAverage(temperatureValues);
-    float averageHumidity = calculateAverage(humidityValues);
-    float averagePressure = calculateAverage(pressureValues);
-
-    // Afficher les moyennes sur le moniteur série
-    Serial.print("Moyenne Température = ");
-    Serial.print(averageTemperature);
-    Serial.println(" *C");
-    Serial.print("Moyenne Humidité = ");
-    Serial.print(averageHumidity);
-    Serial.println(" %");
-    Serial.print("Moyenne Pression = ");
-    Serial.print(averagePressure);
-    Serial.println(" hPa");
-
-    // Envoyer les données à la base de données SQLite
-    saveToDatabase(averageTemperature, averageHumidity, averagePressure);
-  }
+  // Attente avant la prochaine lecture
+  delay(5000);
 }
