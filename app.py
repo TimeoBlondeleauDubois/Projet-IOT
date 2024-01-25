@@ -91,7 +91,6 @@ def sonde1():
             pression = request.form.get('pression')
             temps = datetime.now()
 
-            # Vérifier si toutes les valeurs sont présentes
             if temperature is not None and humidite is not None and pression is not None:
                 cursor.execute("INSERT INTO Meteo (temperature, humidite, pression, temps) VALUES (?, ?, ?, ?)",
                                (temperature, humidite, pression, temps))
@@ -141,6 +140,6 @@ def get_data():
     return jsonify(result)
 
 if __name__ == "__main__":
-    app.run(debug=True,port=2000#, host='192.168.164.187')
+    app.run(debug=True,port=2000#, host='192.168.164.187'
     )
 
