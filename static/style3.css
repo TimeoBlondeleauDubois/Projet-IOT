@@ -56,7 +56,7 @@ body {
 }
 
 .sondebtn{
-    background-color:  #bd6ed0 !important;
+    background-color:  #514b93 !important;
     box-shadow: 1px 1px 4px 1px #0000009d;
     border: none !important;
     width: 80vw;
@@ -65,13 +65,20 @@ body {
     font-size: 200% !important;
 }
 .sondebtn:hover{
-    background-color:  #a260b3 !important;
+    background-color:  #978fd0 !important;
 }
 
 .colormode-container {
     /* background: red; */
     border-radius: 100%;
     padding: 8px;
+}
+.colormode-container:hover {
+    box-shadow: 0px 0px 4px 1px #0000009d;
+}
+
+.colormode-container:hover .moon {
+    fill:red;
 }
 
 .moon {
@@ -80,6 +87,7 @@ body {
     display: none;
     
 }
+
 
 .sun {
     height: 40px;
