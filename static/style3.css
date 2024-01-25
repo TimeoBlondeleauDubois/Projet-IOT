@@ -9,6 +9,24 @@ body {
 }
 
 
+.meteo-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px;
+    text-align: center;
+    margin-top: 30px;
+    height: 10vh;
+    background: rgba(255, 255, 255, 0.7);
+    margin: 10px;
+    border-radius: 10px;
+    transition: all ease-in 0.1s;
+}
+
+.meteo-container:hover {
+    background-color: rgba(255, 255, 255, 0.85);
+    transition: all ease-in 0.1s;
+}
 
 
 .graphContainer {
@@ -41,7 +59,7 @@ body {
 
 .svg-container:hover {
     transition: all ease-in 0.1s;
-    opacity: 1;
+    opacity: 0.85;
 }
 .main-svg {
     padding: 0;
@@ -50,14 +68,12 @@ body {
 }
 
 .btn-container {
-    /* background: aqua; */
     display: flex;
     align-items: center !important;
     justify-content: space-around;
 }
 
 .sondebtn{
-
     box-shadow: 1px 1px 4px 1px #0000009d;
     border: none !important;
     width: 80vw;
@@ -67,7 +83,6 @@ body {
 }
 
 .colormode-container {
-    /* background: red; */
     border-radius: 100%;
     padding: 8px;
 }
@@ -98,7 +113,7 @@ body {
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    transition: .5s;
+    transition: .1s;
     transform: scale(.9);
     z-index: -1;
   }
@@ -144,4 +159,17 @@ body {
 }
 .light-mode:hover {
     background: #cb9a3e !important;
+}
+
+.infos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 80px;
+    height: 80px;
+}
+.infos svg {
+    height: 20px !important;
+    width: 20px !important;
+    margin-right: 5px;
 }

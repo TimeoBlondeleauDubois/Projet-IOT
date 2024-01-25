@@ -90,3 +90,10 @@ function toggleIcons() {
   // console.log(iconClicked);
   return iconClicked;
 }
+
+const tooltipTriggerList = document.querySelectorAll(
+  '[data-bs-toggle="tooltip"]'
+);
+const tooltipList = [...tooltipTriggerList].map(
+  (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl)
+);
