@@ -12,6 +12,7 @@
         <table>
             <thead>
                 <tr>
+                    <th>Sonde</th>
                     <th>Température</th>
                     <th>Humidité</th>
                     <th>Pression</th>
@@ -20,8 +21,9 @@
                 </tr>
             </thead>
             <tbody>
-                {% for mesure in mesures %}
+                {% for index, mesure in mesures_enum %}
                     <tr>
+                        <td>{{ index }}</td>
                         <td>{{ mesure[2] }}</td>
                         <td>{{ mesure[3] }}</td>
                         <td>{{ mesure[4] }}</td>
