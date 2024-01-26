@@ -107,7 +107,6 @@ void loop() {
   client.publish("esp8266/humidity", String(humidity).c_str());
   client.publish("esp8266/pressure", String(pressure).c_str());
 
-  // Afficher les valeurs sur l'écran OLED
   displayDataOnScreen(temperature, humidity, pressure);
 
   delay(5000);

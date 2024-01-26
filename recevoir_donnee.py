@@ -9,8 +9,7 @@ app = Flask(__name__)
 def insert_data():
     try:
         data = request.get_json()
-        print("Received data:", data)  # Ajoutez cette ligne pour imprimer les données reçues
-        # ... (le reste du code)
+        print("Received data:", data)
 
         data = request.get_json()
         temperature = data['temperature']
@@ -18,11 +17,9 @@ def insert_data():
         pressure = data['pressure']
         current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-        # Connexion à la base de données SQLite
         connection = sqlite3.connect('base_de_donnee.db')
         cursor = connection.cursor()
 
-        # Insérer les données dans la table Meteo
         cursor.execute("""
             INSERT INTO Meteo (temperature, humidite, pression, temps)
             VALUES (?, ?, ?, ?)
