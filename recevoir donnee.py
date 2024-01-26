@@ -9,6 +9,10 @@ app = Flask(__name__)
 def insert_data():
     try:
         data = request.get_json()
+        print("Received data:", data)  # Ajoutez cette ligne pour imprimer les données reçues
+        # ... (le reste du code)
+
+        data = request.get_json()
         temperature = data['temperature']
         humidity = data['humidity']
         pressure = data['pressure']
