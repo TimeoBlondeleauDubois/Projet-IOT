@@ -8,7 +8,7 @@ fetch("/get_data")
     const yHumidity = data.humidity;
     const yPressure = data.pressure;
 
-    // Création du graphique Plotly
+    // Création du graphique
     const plotDataTemp = [
       {
         x: xValues,

@@ -136,16 +136,6 @@ def get_data():
         "humidity": [entry[2] for entry in data],
         "pressure": [entry[3] for entry in data]
     }
-    
-    return jsonify(result)
-
-@app.route('/data.json')
-def get_data_json():
-    # Lisez le contenu du fichier data.json
-    with open('data.json', 'r') as file:
-        data = file.read()
-
-    return jsonify(data)
 
 
 if __name__ == "__main__":
