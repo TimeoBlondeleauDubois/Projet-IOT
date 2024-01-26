@@ -1,28 +1,72 @@
+#include <ESP8266WiFi.h>
+#include <PubSubClient.h>
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
-#include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
-#define SCREEN_WIDTH 128 // OLED display width, in pixels
-#define SCREEN_HEIGHT 64 // OLED display height, in pixels
-
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
 #define SEALEVELPRESSURE_HPA (1013.25)
 
-Adafruit_BME280 bme; // I2C
-
-const char *ssid = "legra";
-const char *password = "123";
-const char *serverIP = "192.168.170.187";
-const int serverPort = 5000;
-
-// Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
+Adafruit_BME280 bme;
+const char* ssid = "Alexandre's Galaxy S21 5G";
+const char* password = "MMMMMMMM";
+const char* mqttServer = "192.168.170.187";
+const int mqttPort = 1883;
+const char* mqttUser = "legra";
+const char* mqttPassword = "123";
+WiFiClient espClient;
+PubSubClient client(espClient);
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+const char* serverIP = "192.168.170.187";
+const int serverPort = 80;
+
+// Déclaration du prototype de displayDataOnScreen
+void displayDataOnScreen(float temperature, float humidity, float pressure);
+
+void callback(char* topic, byte* payload, unsigned int length) {
+  Serial.print("Message arrived in topic: ");
+  Serial.println(topic);
+
+  Serial.print("Message:");
+  for (int i = 0; i < length; i++) {
+    Serial.print((char)payload[i]);
+  }
+
+  Serial.println();
+  Serial.println("-----------------------");
+}
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
+
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.println("Connecting to WiFi..");
+  }
+
+  Serial.println("Connected to the WiFi network");
+
+  client.setServer(mqttServer, mqttPort);
+  client.setCallback(callback);
+
+  while (!client.connected()) {
+    Serial.println("Connecting to MQTT...");
+
+    if (client.connect("ESP8266Client", mqttUser, mqttPassword)) {
+      Serial.println("connected");
+    } else {
+      Serial.print("failed with state ");
+      Serial.print(client.state());
+      delay(2000);
+    }
+  }
+
   Wire.pins(0, 2);
   Wire.begin();
 
@@ -33,13 +77,6 @@ void setup() {
     while (1);
   }
 
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
-    Serial.println("Connexion au WiFi en cours...");
-  }
-  Serial.println("Connecté au WiFi!");
-
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println(F("Échec de l'allocation SSD1306"));
     for (;;);
@@ -49,11 +86,29 @@ void setup() {
 
 void loop() {
   float temperature = bme.readTemperature();
-  float pressure = bme.readPressure() / 100.0F;
   float humidity = bme.readHumidity();
+  float pressure = bme.readPressure() / 100.0F;
 
+  // Afficher les valeurs brutes sur la console série
+  Serial.print("Raw Temperature = ");
+  Serial.print(bme.readTemperature());
+  Serial.println(" *C");
+
+  Serial.print("Raw Humidity = ");
+  Serial.print(bme.readHumidity());
+  Serial.println(" %");
+
+  Serial.print("Raw Pressure = ");
+  Serial.print(bme.readPressure());
+  Serial.println(" hPa");
+
+  // Publier les valeurs sur MQTT
+  client.publish("esp8266/temperature", String(temperature).c_str());
+  client.publish("esp8266/humidity", String(humidity).c_str());
+  client.publish("esp8266/pressure", String(pressure).c_str());
+
+  // Afficher les valeurs sur l'écran OLED
   displayDataOnScreen(temperature, humidity, pressure);
-  sendDataToServer(temperature, humidity, pressure);
 
   delay(5000);
 }
@@ -66,7 +121,7 @@ void sendDataToServer(float temperature, float humidity, float pressure) {
                     "&humidity=" + String(humidity) +
                     "&pressure=" + String(pressure);
 
-  http.begin(url);
+  http.begin(espClient, url);
   http.addHeader("Content-Type", "application/x-www-form-urlencoded");
 
   int httpResponseCode = http.POST(postData);
