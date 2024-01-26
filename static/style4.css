@@ -3,20 +3,29 @@ body {
     background-color: #f4f4f4;
     margin: 0;
     padding: 0;
-    background: linear-gradient(to bottom, #FFE7C1 0%, #DC84F3 100%);
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-attachment: fixed;
-    background-position: center;
+    background-repeat: no-repeat !important;
+    background-size: cover !important;
+    background-attachment: fixed !important;
+    background-position: center !important;
+    background: url(nightbg.png);
 }
 
 .wrapper {
     width: 80%;
     margin: 20px auto;
-    background-color: #fff;
+    background-color: #ffffff99;
+    border-radius: 20px;
     padding: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.15s ease-in;
 }
+
+.wrapper:hover {
+    transition: all 0.15s ease-in;
+    background-color: #ffffffbd;
+
+}
+
 
 table {
     width: 100%;
@@ -37,10 +46,24 @@ td {
     border-bottom: 1px solid #ddd;
 }
 
+.btndiv {
+    display: flex;
+    flex-direction: column;
+}
+
 .btn {
-    background-color: #d9534f;
+    width: 10vw;
+    background-color: #555ab1;
     color: #fff;
     border: none;
     padding: 8px 12px;
     cursor: pointer;
+    font-weight: 800;
+    transition: all 0.15s ease-in;
+}
+
+.btn:hover {
+    background-color: #6a61c5;
+    transition: all 0.15s ease-in; 
+    border-radius: 5px;
 }

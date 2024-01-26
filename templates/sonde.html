@@ -1,34 +1,75 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sonde</title>
-    <link rel="stylesheet" href="/static/style4.css">
-</head>
-<body>
+    <link rel="stylesheet" href="/static/style4.css" />
+    <script>
+      function validateForm() {
+        var temperature = document.getElementById("temperature").value;
+        var humidite = document.getElementById("humidite").value;
+        var pression = document.getElementById("pression").value;
+
+        if (temperature === "" || humidite === "" || pression === "") {
+          alert(
+            "Veuillez saisir les trois mesures (température, humidité, pression) en même temps."
+          );
+          return false;
+        }
+
+        return true;
+      }
+    </script>
+  </head>
+  <body>
     <div class="wrapper">
-        <form method="post" action="/sonde1">
-            <h1>Ajouter une mesure</h1>
-            <div class="input-box">
-                <input type="text" id="valeur" name="valeur" placeholder="Valeur">
-            </div>
-            <div class="input-box">
-                <select id="type_mesure" name="type_mesure">
-                    <option value="temperature">Température</option>
-                    <option value="humidite">Humidité</option>
-                    <option value="pression">Pression</option>
-                </select>
-            </div>            
-            <br>
-            <button type="submit" class="btn">Ajouter</button>
+      <div class="btndiv">
+        <form
+          class="addform"
+          method="post"
+          action="/sonde1"
+          onsubmit="return validateForm()"
+        >
+          <h1>Ajouter une mesure</h1>
+          <div class="input-box">
+            <input
+              type="text"
+              id="temperature"
+              name="temperature"
+              placeholder="Température"
+            />
+          </div>
+          <div class="input-box">
+            <input
+              type="text"
+              id="humidite"
+              name="humidite"
+              placeholder="Humidité"
+            />
+          </div>
+          <div class="input-box">
+            <input
+              type="text"
+              id="pression"
+              name="pression"
+              placeholder="Pression"
+            />
+          </div>
+          <br />
+          <button type="submit" class="btn">Ajouter</button>
         </form>
-        <br>
+        <br />
         <h1>Voir et Supprimer les mesures</h1>
-        <a href="/afficher_mesures" class="btn">Afficher et Supprimer</a>
-        <br><br>
+        <button onclick="window.location.href='/afficher_mesures'" class="btn">
+          Afficher et Supprimer
+        </button>
+        <br /><br />
         <h1>Retourner au menu</h1>
-        <a href="/dashboard" class="btn">Retour au menu</a>
+        <button onclick="window.location.href='/dashboard'" class="btn">
+          Retour au menu
+        </button>
+      </div>
     </div>
-</body>
+  </body>
 </html>

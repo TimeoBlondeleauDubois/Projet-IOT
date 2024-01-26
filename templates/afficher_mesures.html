@@ -1,42 +1,46 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Afficher et Supprimer les mesures</title>
-    <link rel="stylesheet" href="/static/style4.css">
-</head>
-<body>
+    <link rel="stylesheet" href="/static/style4.css" />
+  </head>
+  <body>
     <div class="wrapper">
-        <h1>Mesures enregistrées</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>Température</th>
-                    <th>Humidité</th>
-                    <th>Pression</th>
-                    <th>Date et Heure</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for mesure in mesures %}
-                    <tr>
-                        <td>{{ mesure[2] }}</td>
-                        <td>{{ mesure[3] }}</td>
-                        <td>{{ mesure[4] }}</td>
-                        <td>{{ mesure[5] }}</td>
-                        <td>
-                            <form method="post" action="/supprimer_mesure/{{ mesure[0] }}">
-                                <button type="submit" class="btn">Supprimer</button>
-                            </form>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <br>
-        <a href="/sonde" class="btn">Retour</a>
+      <h1>Mesures enregistrées</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>Sonde</th>
+            <th>Température</th>
+            <th>Humidité</th>
+            <th>Pression</th>
+            <th>Date et Heure</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for index, mesure in mesures_enum %}
+          <tr>
+            <td>{{ index }}</td>
+            <td>{{ mesure[2] }}</td>
+            <td>{{ mesure[3] }}</td>
+            <td>{{ mesure[4] }}</td>
+            <td>{{ mesure[5] }}</td>
+            <td>
+              <form method="post" action="/supprimer_mesure/{{ mesure[0] }}">
+                <button type="submit" class="btn">Supprimer</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <br />
+      <button onclick="window.location.href='/sonde'" class="btn">
+        Retour
+      </button>
     </div>
-</body>
+  </body>
 </html>

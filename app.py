@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 import sqlite3
 from bcrypt import hashpw, gensalt
 from datetime import datetime
+from flask import request, jsonify
 
 app = Flask(__name__)
 
@@ -85,18 +86,19 @@ def sonde1():
         with connect_db() as db:
             cursor = db.cursor()
 
-            valeur = request.form['valeur']
-            type_mesure = request.form['type_mesure']
+            temperature = request.form.get('temperature')
+            humidite = request.form.get('humidite')
+            pression = request.form.get('pression')
             temps = datetime.now()
 
-            if type_mesure == 'temperature':
-                cursor.execute("INSERT INTO Meteo (temperature, temps) VALUES (?, ?)", (valeur, temps))
-            elif type_mesure == 'humidite':
-                cursor.execute("INSERT INTO Meteo (humidite, temps) VALUES (?, ?)", (valeur, temps))
-            elif type_mesure == 'pression':
-                cursor.execute("INSERT INTO Meteo (pression, temps) VALUES (?, ?)", (valeur, temps))
+            if temperature is not None and humidite is not None and pression is not None:
+                cursor.execute("INSERT INTO Meteo (temperature, humidite, pression, temps) VALUES (?, ?, ?, ?)",
+                               (temperature, humidite, pression, temps))
+                return redirect(url_for('sonde'))
+            else:
+                error_message = "Veuillez saisir les trois mesures (température, humidité, pression) en même temps."
+                return render_template('sonde.html', error=error_message)
 
-        return redirect(url_for('sonde'))
     
 @app.route('/afficher_mesures')
 def afficher_mesures():
@@ -104,7 +106,11 @@ def afficher_mesures():
         cursor = db.cursor()
         cursor.execute("SELECT * FROM Meteo")
         mesures = cursor.fetchall()
-    return render_template('afficher_mesures.html', mesures=mesures)
+    
+    mesures_enum = list(enumerate(mesures, start=1))
+
+    return render_template('afficher_mesures.html', mesures_enum=mesures_enum)
+
 
 @app.route('/supprimer_mesure/<int:mesure_id>', methods=['POST'])
 def supprimer_mesure(mesure_id):
@@ -143,6 +149,6 @@ def get_data_json():
 
 
 if __name__ == "__main__":
-    app.run(debug=True,port=2000#, host='192.168.164.187')
+    app.run(debug=True,port=2000#, host='192.168.164.187'
     )
 
