@@ -58,6 +58,17 @@ fetch("/get_data")
     Plotly.newPlot("myPlotTemp", plotDataTemp, plotLayoutTemp);
     Plotly.newPlot("myPlotHum", plotDataHum, plotLayoutHum);
     Plotly.newPlot("myPlotPress", plotDataPress, plotLayoutPress);
+
+    // Récupération des dernières valeurs de température, humidité et pression
+    const lastTemperature = yTemperature[yTemperature.length - 1];
+    const lastHumidity = yHumidity[yHumidity.length - 1];
+    const lastPressure = yPressure[yPressure.length - 1];
+
+    // Mise à jour des balises HTML avec les dernières valeurs
+    document.getElementById("currentTemp").innerText = `${lastTemperature} °C`;
+    document.getElementById("currentHum").innerText = `${lastHumidity} %`;
+    document.getElementById("currentPress").innerText = `${lastPressure} hPa`;
+
   })
   .catch((error) =>
     console.error("Erreur lors de la récupération des données:", error)

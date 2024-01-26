@@ -173,3 +173,7 @@ body {
     width: 20px !important;
     margin-right: 5px;
 }
+
+.meteo-container p {
+    margin: auto 0;
+}
