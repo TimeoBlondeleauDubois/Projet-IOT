@@ -133,6 +133,15 @@ def get_data():
     
     return jsonify(result)
 
+@app.route('/data.json')
+def get_data_json():
+    # Lisez le contenu du fichier data.json
+    with open('data.json', 'r') as file:
+        data = file.read()
+
+    return jsonify(data)
+
+
 if __name__ == "__main__":
     app.run(debug=True,port=2000#, host='192.168.164.187')
     )
