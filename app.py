@@ -137,6 +137,9 @@ def get_data():
         "pressure": [entry[3] for entry in data]
     }
 
+    return jsonify(result)
+
+
 
 if __name__ == "__main__":
     app.run(debug=True,port=2000#, host='192.168.164.187'
